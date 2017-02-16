@@ -1,0 +1,152 @@
+(function (fluid) {
+    "use strict";
+    fluid.registerNamespace("fluid.tests.dataSource.nextGen.AJAX");
+
+    fluid.tests.dataSource.nextGen.AJAX.logAndReturn = function (event, value) {
+        fluid.log("Event '", event, "' fired with value:\n", value);
+        return value;
+    };
+
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX", {
+        gradeNames: ["fluid.dataSource.nextGen.AJAX"],
+        listeners: {
+            "onRead.logAndReturn": {
+                priority: "after:encoding",
+                funcName: "fluid.tests.dataSource.nextGen.AJAX.logAndReturn",
+                args:     ["onRead", "{arguments}.0"]
+            },
+            "onError.logAndReturn": {
+                priority: "after:encoding",
+                funcName: "fluid.tests.dataSource.nextGen.AJAX.logAndReturn",
+                args:     ["onError", "{arguments}.0"]
+            }
+        }
+    });
+
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.fourOhFour", {
+        gradeNames: ["fluid.tests.dataSource.nextGen.AJAX"],
+        url:        "/tests/notfound"
+    });
+
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.validJson", {
+        gradeNames: ["fluid.tests.dataSource.nextGen.AJAX"],
+        url:        "/tests/data/valid.json"
+    });
+
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.text", {
+        gradeNames: ["fluid.tests.dataSource.nextGen.AJAX"],
+        url:        "/tests/data/text.txt"
+    });
+
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.termMap", {
+        gradeNames: ["fluid.tests.dataSource.nextGen.AJAX"],
+        url:        "/tests/data/%filename",
+        termMap: {
+            filename: "%filename"
+        }
+    });
+
+    // TODO: Test support for query data using data
+    // TODO: Test POST/PUT support
+    fluid.defaults("fluid.tests.select.dataSource.caseHolder", {
+        gradeNames: ["fluid.test.testCaseHolder"],
+        modules: [{
+            name: "Testing jQuery.ajax dataSource...",
+            tests: [
+                {
+                    name: "Testing 404 error handling...",
+                    sequence: [
+                        {
+                            func: "{fourOhFour}.get"
+                        },
+                        {
+                            event:    "{fourOhFour}.events.onError",
+                            listener: "jqUnit.assert",
+                            args:     ["An error event should fire when requesting a URL that cannot be found."]
+                        }
+                    ]
+                },
+                {
+                    name: "Test retrieving JSON content...",
+                    sequence: [
+                        {
+                            func: "{validJson}.get"
+                        },
+                        {
+                            event:    "{validJson}.events.onRead",
+                            priority: "after:impl",
+                            listener: "jqUnit.assertDeepEq",
+                            args:     ["We should be able to retrieve a JSON payload.", "{caseHolder}.options.expected.validJson", "{arguments}.0"]
+                        }
+                    ]
+                },
+                {
+                    name: "Test retrieving text content...",
+                    sequence: [
+                        {
+                            func: "{text}.get"
+                        },
+                        {
+                            event:    "{text}.events.onRead",
+                            priority: "after:impl",
+                            listener: "jqUnit.assertEquals",
+                            args:     ["We should be able to retrieve a text payload.", "{caseHolder}.options.expected.text", "{arguments}.0"]
+                        }
+                    ]
+                },
+                {
+                    name: "Test using a term map to customise the URL...",
+                    sequence: [
+                        {
+                            func: "{termMap}.get",
+                            args: [{ filename: "custom.json"}]
+                        },
+                        {
+                            event:    "{termMap}.events.onRead",
+                            priority: "after:impl",
+                            listener: "jqUnit.assertDeepEq",
+                            args:     ["We should end up at the correct custom URL.", "{caseHolder}.options.expected.termMap", "{arguments}.0"]
+                        }
+                    ]
+                }
+            ]
+        }],
+        components: {
+            fourOhFour: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.fourOhFour"
+            },
+            validJson: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.validJson"
+            },
+            text: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.text"
+            },
+            termMap: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.termMap"
+            }
+        },
+        expected: {
+            validJson: {
+                "array": [ "peas", "porridge", "hot"],
+                "number": 3.1415926,
+                "string": "false",
+                "boolean": false
+            },
+            text: "This is not valid JSON data and should blow up anything that tries to parse it.",
+            termMap: {
+                "term maps": "seem to work"
+            }
+        }
+    });
+
+    fluid.defaults("fluid.tests.select.dataSource.environment", {
+        gradeNames: ["fluid.test.testEnvironment"],
+        components: {
+            caseHolder: {
+                type: "fluid.tests.select.dataSource.caseHolder"
+            }
+        }
+    });
+
+    fluid.test.runTests("fluid.tests.select.dataSource.environment");
+})(fluid);

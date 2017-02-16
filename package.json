@@ -1,0 +1,38 @@
+{
+  "name": "fluid-select",
+  "version": "1.0.0",
+  "description": "A Fluid component to generate an accessible select element using gpii-handlebars.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/all-tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/the-t-in-rtf/fluid-select.git"
+  },
+  "author": "Tony Atkins <tony@raisingthefloor.org>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/the-t-in-rtf/fluid-select/issues"
+  },
+  "homepage": "https://github.com/the-t-in-rtf/fluid-select#readme",
+  "dependencies": {
+    "gpii-binder": "1.0.0-dev.20170127T144054Z.54a5ef2",
+    "gpii-handlebars": "1.0.0",
+    "infusion": "3.0.0-dev.20170127T130413Z.103de6e",
+    "jquery": "2.1.4"
+  },
+  "devDependencies": {
+    "eslint": "3.15.0",
+    "eslint-config-fluid": "1.1.0",
+    "fluid-grunt-eslint": "18.1.2",
+    "gpii-express": "1.0.2",
+    "gpii-launcher": "1.0.0-dev.20170207T102054Z.3d7b546",
+    "gpii-webdriver": "1.0.0",
+    "grunt": "1.0.1",
+    "grunt-jsonlint": "1.1.0",
+    "istanbul": "0.4.5",
+    "jsonlint": "1.6.0",
+    "node-jqunit": "1.1.4"
+  }
+}

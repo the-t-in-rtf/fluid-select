@@ -1,0 +1,15 @@
+{
+  "type": "devConfig",
+  "options": {
+    "gradeNames": ["fluid.tests.select.harness"],
+    "ports": {
+      "express":   7111
+    },
+    "listeners": {
+      "onCreate.constructFixtures": {
+        "func": "{that}.events.constructFixtures.fire"
+      }
+    }
+  },
+  "require": ["%fluid-select/tests/js/lib/test-harness.js"]
+}
