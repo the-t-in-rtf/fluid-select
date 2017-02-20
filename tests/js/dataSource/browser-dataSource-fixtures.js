@@ -51,7 +51,7 @@
         url:        "/loopback"
     });
 
-    // TODO: Test using a termMap with a POST/PUT
+    // TODO: Get termMap working with a POST/PUT
     fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.termMap.writable", {
         gradeNames: ["fluid.tests.dataSource.nextGen.AJAX", "fluid.dataSource.nextGen.AJAX.writable"],
         url:        "/loopback/%param",
@@ -61,6 +61,7 @@
     });
 
     // TODO: Test support for query data using data?
+
     fluid.defaults("fluid.tests.select.dataSource.caseHolder", {
         gradeNames: ["fluid.test.testCaseHolder"],
         modules: [{

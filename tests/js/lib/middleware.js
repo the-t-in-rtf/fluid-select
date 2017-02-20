@@ -38,6 +38,9 @@ fluid.defaults("fluid.tests.dataSource.loopbackMiddleware", {
 
 fluid.defaults("fluid.tests.dataSource.loopbackRouter", {
     gradeNames: ["gpii.express.router"],
+    routerOptions: {
+        mergeParams: true
+    },
     components: {
         json: {
             type: "gpii.express.middleware.bodyparser.json"

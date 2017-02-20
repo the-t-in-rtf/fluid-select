@@ -123,9 +123,9 @@ fluid.defaults("fluid.tests.select.harness", {
                     dispatcher: {
                         type: "gpii.handlebars.dispatcherMiddleware",
                         options: {
-                            priority:    "last",
-                            path:        ["/content/:template", "/content"],
-                            method:      "get",
+                            priority:     "last",
+                            path:         ["/content/:template", "/content"],
+                            method:       "get",
                             templateDirs: "{harness}.options.templateDirs"
                         }
                     }

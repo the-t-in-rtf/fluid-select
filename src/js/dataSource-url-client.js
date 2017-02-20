@@ -131,8 +131,8 @@
         invokers: {
             setImpl: {
                 funcName: "fluid.dataSource.nextGen.AJAX.makeRequest",
-                // TODO: Discuss why this needs to be cross-wired, also how we get back the directModel
-                args:     ["{that}", "{arguments}.1", {}, "{arguments}.0"] // requestOptions, directModel, model
+                // TODO: Discuss why this needs to be cross-wired in exactly this way, and whether we have better options.
+                args:     ["{that}", "{arguments}.1", "{arguments}.1.directModel", "{arguments}.0"] // requestOptions, directModel, model
             }
         }
     });
