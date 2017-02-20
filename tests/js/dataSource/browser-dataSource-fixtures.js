@@ -46,7 +46,12 @@
         }
     });
 
-    // TODO: Test support for query data using data
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.writable", {
+        gradeNames: ["fluid.dataSource.nextGen.AJAX", "fluid.dataSource.nextGen.AJAX.writable"],
+        url:        "/loopback"
+    });
+
+    // TODO: Test support for query data using data?
     // TODO: Test POST/PUT support
     fluid.defaults("fluid.tests.select.dataSource.caseHolder", {
         gradeNames: ["fluid.test.testCaseHolder"],
@@ -108,6 +113,21 @@
                             args:     ["We should end up at the correct custom URL.", "{caseHolder}.options.expected.termMap", "{arguments}.0"]
                         }
                     ]
+                },
+                {
+                    name: "Test POSTing data...",
+                    sequence: [
+                        {
+                            func: "{goodPost}.set",
+                            args: [{}, { foo: "bar"}, {}] // directModel, model, options
+                        },
+                        {
+                            event:    "{goodPost}.events.onWrite",
+                            priority: "after:encoding",
+                            listener: "jqUnit.assertDeepEq",
+                            args:     ["We should be able to post and receive the correct response...", "{caseHolder}.options.expected.goodPost", "{arguments}.0"]
+                        }
+                    ]
                 }
             ]
         }],
@@ -123,6 +143,9 @@
             },
             termMap: {
                 type: "fluid.tests.dataSource.nextGen.AJAX.termMap"
+            },
+            goodPost: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.writable"
             }
         },
         expected: {
@@ -135,6 +158,11 @@
             text: "This is not valid JSON data and should blow up anything that tries to parse it.",
             termMap: {
                 "term maps": "seem to work"
+            },
+            goodPost: {
+                body: {
+                    foo: "bar"
+                }
             }
         }
     });

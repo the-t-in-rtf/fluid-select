@@ -10,6 +10,7 @@ fluid.setLogging(true);
 var gpii  = fluid.registerNamespace("gpii");
 
 require("../../../");
+require("./middleware");
 
 fluid.require("%gpii-express");
 require("gpii-handlebars");
@@ -24,6 +25,14 @@ fluid.defaults("fluid.tests.select.harness", {
     templateDirs: ["%fluid-select/tests/templates", "%fluid-select/src/templates"],
     ports: {
         express: 6879
+    },
+    urls: {
+        express: {
+            expander: {
+                funcName: "fluid.stringTemplate",
+                args:     ["http://localhost:%port", { port: "{harness}.options.ports.express" }]
+            }
+        }
     },
     events: {
         constructFixtures: null,
@@ -54,10 +63,24 @@ fluid.defaults("fluid.tests.select.harness", {
             options: {
                 port: "{harness}.options.ports.express",
                 components: {
+                    // We will be make AJAX from testem-hosted pages, so we need to allow cross-domain requests.
+                    corsHeaders: {
+                        type: "gpii.express.middleware.headerSetter",
+                        options: {
+                            priority: "first",
+                            headers: {
+                                cors: {
+                                    fieldName: "Access-Control-Allow-Origin",
+                                    template:  "*",
+                                    dataRules: {}
+                                }
+                            }
+                        }
+                    },
                     handlebars: {
                         type: "gpii.express.hb",
                         options: {
-                            priority:     "first",
+                            priority:     "after:corsHeaders",
                             templateDirs: "{harness}.options.templateDirs"
                         }
                     },
@@ -91,11 +114,17 @@ fluid.defaults("fluid.tests.select.harness", {
                             content:  ["%fluid-select/tests"]
                         }
                     },
+                    loopback: {
+                        type: "fluid.tests.dataSource.loopbackRouter",
+                        options: {
+                            path: "/loopback"
+                        }
+                    },
                     dispatcher: {
                         type: "gpii.handlebars.dispatcherMiddleware",
                         options: {
                             priority:    "last",
-                            path:        ["/:template", "/"],
+                            path:        ["/content/:template", "/content"],
                             method:      "get",
                             templateDirs: "{harness}.options.templateDirs"
                         }

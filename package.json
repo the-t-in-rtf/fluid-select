@@ -33,6 +33,7 @@
     "grunt-jsonlint": "1.1.0",
     "istanbul": "0.4.5",
     "jsonlint": "1.6.0",
-    "node-jqunit": "1.1.4"
+    "node-jqunit": "1.1.4",
+    "testem": "1.15.0"
   }
 }

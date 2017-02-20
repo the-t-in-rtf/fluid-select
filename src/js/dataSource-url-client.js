@@ -121,15 +121,16 @@
     });
 
     fluid.defaults("fluid.dataSource.nextGen.AJAX.writable", {
-        gradeNames: ["kettle.dataSource.writable"],
+        gradeNames: ["fluid.dataSource.nextGen.writable"],
         baseRequestOptions: {
             method: "{that}.options.writeMethod"
         },
+        writable:    true,
         writeMethod: "POST",
         invokers: {
             setImpl: {
                 funcName: "fluid.dataSource.nextGen.AJAX.makeRequest",
-                args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2"] // requestOptions, directModel, model
+                args:     ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2"] // requestOptions, directModel, model
             }
         }
     });

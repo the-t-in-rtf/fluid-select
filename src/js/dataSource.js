@@ -24,7 +24,7 @@ fluid.dataSource.nextGen.get = function (that, directModel, options) {
 
 // TODO: Discuss a comparable refactor of the "set" infrastructure with Antranig.
 // My gut feel is that we sequence the separate parts, but I'm not sure how to encapsulate innerPromise to be aware
-// of all the necessary materias.
+// of all the necessary materials.
 
 /** Operate the core "transforming promise workflow" of a dataSource's `set` method. Pushes the user's payload backwards through the
  * transforming promise chain (in the opposite direction to that applied on `get`, and then applies it to the dataSource's `setImpl` method.
@@ -37,36 +37,23 @@ fluid.dataSource.nextGen.get = function (that, directModel, options) {
  * @return {Promise} A promise for the final resolved payload (not all DataSources will provide any for a `set` method)
  */
 
-// fluid.dataSource.nextGen.set = function (that, directModel, model, options) {
-//     options = kettle.dataSource.defaultiseOptions(that.options, options, directModel, true); // shared and writeable between all participants
-//     var transformPromise = fluid.promise.fireTransformEvent(that.events.onWrite, model, options);
-//     var togo = fluid.promise();
-//     transformPromise.then(function (transformed) {
-//         var innerPromise = that.setImpl(options, directModel, transformed);
-//         innerPromise.then(function (setResponse) { // Apply limited transforms to a SET response payload
-//             var options2 = kettle.dataSource.defaultiseOptions(that.options, fluid.copy(options), directModel);
-//             options2.filterNamespaces = that.options.setResponseTransforms;
-//             var retransformed = fluid.promise.fireTransformEvent(that.events.onRead, setResponse, options2);
-//             fluid.promise.follow(retransformed, togo);
-//         }, function (error) {
-//             togo.reject(error);
-//         });
-//     });
-//     kettle.dataSource.registerStandardPromiseHandlers(that, togo, options);
-//     return togo;
-// };
+fluid.dataSource.nextGen.set = function (that, directModel, model, options) {
+    options = kettle.dataSource.defaultiseOptions(that.options, options, directModel, true); // shared and writeable between all participants
+    var togo = fluid.promise.fireTransformEvent(that.events.onWrite, model, options);
+    kettle.dataSource.registerStandardPromiseHandlers(that, togo, options);
+    return togo;
+};
 
 fluid.defaults("fluid.dataSource.nextGen", {
     gradeNames: ["fluid.component", "{that}.getWritableGrade"],
+    readOnlyGrade: "fluid.dataSource.nextGen",
     mergePolicy: {
         setResponseTransforms: "replace"
     },
     events: {
-        // events "onRead" and "onWrite" are operated in a custom workflow by fluid.fireTransformEvent to
-        // process dataSource payloads during the get and set process. Each listener
-        // receives the data returned by the last.
-        onRead: null,
-        onWrite: null,
+        // The "onRead" event is operated in a custom workflow by fluid.fireTransformEvent to process dataSource
+        // payloads during the get set process. Each listener receives the data returned by the last.
+        onRead:  null,
         onError: null
     },
     components: {
@@ -83,21 +70,15 @@ fluid.defaults("fluid.dataSource.nextGen", {
             func:      "{encoding}.parse",
             namespace: "encoding",
             priority:  "after:impl"
-        },
-        // "onWrite.encoding": {
-        //     func:      "{encoding}.render",
-        //     namespace: "encoding"
-        // },
-        // "onWrite.impl": {
-        //     func:      "{encoding}.render",
-        //     namespace: "encoding",
-        //     priority:  "after:encoding"
-        // }
+        }
     },
     invokers: {
         get: {
             funcName: "fluid.dataSource.nextGen.get",
             args:     ["{that}", "{arguments}.0", "{arguments}.1"] // directModel, options/callback
+        },
+        getImpl: {
+            funcName: "fluid.identity"
         },
         // getImpl: must be implemented by a concrete subgrade
         getWritableGrade: {
@@ -106,4 +87,36 @@ fluid.defaults("fluid.dataSource.nextGen", {
         }
     },
     writable: false
+});
+
+
+fluid.defaults("fluid.dataSource.nextGen.writable", {
+    gradeNames: ["fluid.component"],
+    writable: true,
+    events: {
+        // The "onWrite" event is operated in a custom workflow by fluid.fireTransformEvent to process dataSource
+        // payloads during the set process. Each listener receives the data returned by the last.
+        onWrite: null,
+        onError: null
+    },
+    listeners: {
+        "onWrite.impl": {
+            func: "{that}.setImpl",
+            args: ["{arguments}.0", "{arguments}.1", "{arguments}.2"] // directModel, model, options
+        },
+        "onWrite.encoding": {
+            func:      "{encoding}.render",
+            namespace: "encoding",
+            priority:  "after:impl"
+        }
+    },
+    invokers: {
+        set: {
+            funcName: "fluid.dataSource.nextGen.set",
+            args:     ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2"] // directModel, model, options/callback
+        },
+        setImpl: {
+            funcName: "fluid.identity"
+        }
+    }
 });
