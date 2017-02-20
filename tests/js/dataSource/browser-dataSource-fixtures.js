@@ -51,8 +51,16 @@
         url:        "/loopback"
     });
 
+    // TODO: Test using a termMap with a POST/PUT
+    fluid.defaults("fluid.tests.dataSource.nextGen.AJAX.termMap.writable", {
+        gradeNames: ["fluid.tests.dataSource.nextGen.AJAX", "fluid.dataSource.nextGen.AJAX.writable"],
+        url:        "/loopback/%param",
+        termMap: {
+            param: "%param"
+        }
+    });
+
     // TODO: Test support for query data using data?
-    // TODO: Test POST/PUT support
     fluid.defaults("fluid.tests.select.dataSource.caseHolder", {
         gradeNames: ["fluid.test.testCaseHolder"],
         modules: [{
@@ -124,8 +132,38 @@
                         {
                             event:    "{goodPost}.events.onWrite",
                             priority: "after:encoding",
-                            listener: "jqUnit.assertDeepEq",
-                            args:     ["We should be able to post and receive the correct response...", "{caseHolder}.options.expected.goodPost", "{arguments}.0"]
+                            listener: "jqUnit.assertLeftHand",
+                            args:     ["We should be able to POST and receive the correct response...", "{caseHolder}.options.expected.goodPost", "{arguments}.0"]
+                        }
+                    ]
+                },
+                {
+                    name: "Test PUT-ing data...",
+                    sequence: [
+                        {
+                            func: "{goodPut}.set",
+                            args: [{}, { me: "down"}, {}] // directModel, model, options
+                        },
+                        {
+                            event:    "{goodPut}.events.onWrite",
+                            priority: "after:encoding",
+                            listener: "jqUnit.assertLeftHand",
+                            args:     ["We should be able to PUT and receive the correct response...", "{caseHolder}.options.expected.goodPut", "{arguments}.0"]
+                        }
+                    ]
+                },
+                {
+                    name: "Test using termMap variables in a write operation...",
+                    sequence: [
+                        {
+                            func: "{termMapPost}.set",
+                            args: [{ param: "set correctly" }, { payload: "also good"}, {}] // directModel, model, options
+                        },
+                        {
+                            event:    "{termMapPost}.events.onWrite",
+                            priority: "after:encoding",
+                            listener: "jqUnit.assertLeftHand",
+                            args:     ["We should be able to use a termMap with a POST...", "{caseHolder}.options.expected.termMapPost", "{arguments}.0"]
                         }
                     ]
                 }
@@ -146,6 +184,15 @@
             },
             goodPost: {
                 type: "fluid.tests.dataSource.nextGen.AJAX.writable"
+            },
+            goodPut: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.writable",
+                options: {
+                    writeMethod: "PUT"
+                }
+            },
+            termMapPost: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.termMap.writable"
             }
         },
         expected: {
@@ -160,8 +207,24 @@
                 "term maps": "seem to work"
             },
             goodPost: {
+                method: "POST",
                 body: {
                     foo: "bar"
+                }
+            },
+            goodPut: {
+                method: "PUT",
+                body: {
+                    me: "down"
+                }
+            },
+            termMapPost: {
+                method: "POST",
+                params: {
+                    param1: "set correctly"
+                },
+                body: {
+                    payload: "also good"
                 }
             }
         }

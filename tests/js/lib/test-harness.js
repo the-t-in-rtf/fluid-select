@@ -117,7 +117,7 @@ fluid.defaults("fluid.tests.select.harness", {
                     loopback: {
                         type: "fluid.tests.dataSource.loopbackRouter",
                         options: {
-                            path: "/loopback"
+                            path: ["/loopback/:param1", "/loopback"]
                         }
                     },
                     dispatcher: {

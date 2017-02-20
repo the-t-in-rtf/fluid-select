@@ -8,6 +8,7 @@
 
 (function (fluid, $) {
     "use strict";
+    fluid.setLogging(true);
 
     fluid.registerNamespace("fluid.dataSource.nextGen.AJAX");
 
@@ -130,7 +131,8 @@
         invokers: {
             setImpl: {
                 funcName: "fluid.dataSource.nextGen.AJAX.makeRequest",
-                args:     ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2"] // requestOptions, directModel, model
+                // TODO: Discuss why this needs to be cross-wired, also how we get back the directModel
+                args:     ["{that}", "{arguments}.1", {}, "{arguments}.0"] // requestOptions, directModel, model
             }
         }
     });

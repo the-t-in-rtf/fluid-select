@@ -22,6 +22,7 @@ fluid.defaults("fluid.tests.dataSource.loopbackMiddleware", {
     method: "use",
     rules: {
         requestToResponse: {
+            method: "method",
             query:  "query",
             body:   "body",
             params: "params"
