@@ -224,7 +224,6 @@
                 "string": "false",
                 "boolean": false
             },
-            text: "This is not valid JSON data and should blow up anything that tries to parse it.",
             termMap: {
                 "term maps": "seem to work"
             },
