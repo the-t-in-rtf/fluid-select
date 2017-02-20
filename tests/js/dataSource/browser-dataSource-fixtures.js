@@ -154,6 +154,20 @@
                     ]
                 },
                 {
+                    name: "Testing 404 error handling in a POST...",
+                    sequence: [
+                        {
+                            func: "{fourOhFourPost}.set",
+                            args: []
+                        },
+                        {
+                            event:    "{fourOhFourPost}.events.onError",
+                            listener: "jqUnit.assert",
+                            args:     ["An error event should fire when POSTing to a URL that cannot be found."]
+                        }
+                    ]
+                },
+                {
                     name: "Test using termMap variables in a write operation...",
                     sequence: [
                         {
@@ -194,7 +208,14 @@
             },
             termMapPost: {
                 type: "fluid.tests.dataSource.nextGen.AJAX.termMap.writable"
+            },
+            fourOhFourPost: {
+                type: "fluid.tests.dataSource.nextGen.AJAX.fourOhFour",
+                options: {
+                    gradeNames: ["fluid.dataSource.nextGen.AJAX.writable"]
+                }
             }
+
         },
         expected: {
             validJson: {
