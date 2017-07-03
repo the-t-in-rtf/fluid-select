@@ -12,6 +12,10 @@
 
     fluid.registerNamespace("fluid.dataSource.nextGen.AJAX");
 
+
+    // TODO: compartmentalize the "advanced" options for this grade into a separate namespace.
+    // TODO:  Reconcile the "common" options with kettle.dataSource.  Move the unique options to a separate field and
+    // set up transformations and/or expansions to map path and other "common" settings to the jQuery.Ajax options.
     // We filter down to ensure that we only pass valid options to jQuery.ajax
     fluid.dataSource.nextGen.AJAX.allowedOptions = [
         "accepts",
@@ -69,6 +73,8 @@
         }
 
         combinedRequestOptions.error = function (jqXHR, textStatus, errorThrown) {
+            // TODO: Add support for notFoundIsEmpty here via a `fieldError` method
+            // that will give us a chance to choose whether to abort.
             promise.reject({ statusCode: jqXHR.status, message: errorThrown || textStatus});
         };
 

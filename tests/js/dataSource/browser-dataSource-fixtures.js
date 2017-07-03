@@ -62,6 +62,10 @@
 
     // TODO: Test support for query data using data?
 
+    // TODO: Write promise-centric tests that also confirm that the "after:impl" events are not fired on an error.
+
+    // TODO: Test and confirm that we still support options.notFoundIsError.
+
     fluid.defaults("fluid.tests.select.dataSource.caseHolder", {
         gradeNames: ["fluid.test.testCaseHolder"],
         modules: [{
@@ -247,7 +251,8 @@
                 body: {
                     payload: "also good"
                 }
-            }
+            },
+            text: "This is not valid JSON data and should blow up anything that tries to parse it."
         }
     });
 
